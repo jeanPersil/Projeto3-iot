@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PROJETO 3</title>
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="navegacao">
+      <h1>Projeto 3</h1>
+      <ul>
+        <li><a href="registrar.html">Registrar</a></li>
+        <li><a href="gerenciar.html">Gerenciar User</a></li>
+      </ul>
+    </nav>
+    <span id="menuBurguer" class="material-symbols-outlined"> menu </span>
+
+    <h1 nenhum></h1>
+
+    <main class="cards-de-usuario"></main>
+
+    <div id="modalEditar" class="modal hidden">
+      <div class="modal-content">
+        <div class="infos">
+          <h3>Editar informações</h3>
+          <label for="">nome</label>
+          <input type="text" id="inputNovoNome" />
+
+          <label for="">senha</label>
+          <input type="text" id="inputNovaSenha" />
+        </div>
+
+        <div class="botaoModal">
+          <button id="salvarEdicao">Salvar</button>
+          <button id="cancelarEdicao">Cancelar</button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="scripts/gerenciar.js"></script>
+  </body>
+</html>

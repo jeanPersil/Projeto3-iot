@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PROJETO 3</title>
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="navegacao">
+      <h1>Projeto 3</h1>
+      <ul>
+        <li><a href="registrar.html">Registrar</a></li>
+        <li><a href="gerenciar.html">Gerenciar User</a></li>
+      </ul>
+    </nav>
+    <span id="menuBurguer" class="material-symbols-outlined"> menu </span>
+
+    <main class="conteudo">
+      <h1>Cadastre um novo usuario</h1>
+      <form action="" class="form" id="formsRegistro">
+        <p class="emUso"></p>
+        <input id="email" type="email" placeholder="E-mail" />
+        <input id="nome" type="text" placeholder="Nome" />
+        <input id="senha" type="password" placeholder="Senha" />
+        <input
+          id="confirmarSenha"
+          type="password"
+          placeholder="Confirme a senha"
+        />
+        <button>CADASTRAR</button>
+        <p id="senha-diferente" class="instru">As senhas precisam coincidir</p>
+        <p id="senha-curta" class="instru">A senha deve ter 4 caracteres</p>
+        <p id="senha-letras" class="instru">Não pode conter letras</p>
+      </form>
+    </main>
+
+    <script type="module" src="scripts/registrar.js"></script>
+  </body>
+</html>
