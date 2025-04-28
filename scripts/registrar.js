@@ -1,35 +1,21 @@
-// Importações dos módulos do Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getFirestore,
-  collection,
+  db,
   addDoc,
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  collection,
+  query,
+  where,
+  getDocs,
+} from "./firebaseConfig.js";
 
-// Configuração do Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyCELZUB4BzaezA4rZiYMERuQ6DF40ULL_A",
-  authDomain: "ledwoki.firebaseapp.com",
-  databaseURL: "https://ledwoki-default-rtdb.firebaseio.com",
-  projectId: "ledwoki",
-  storageBucket: "ledwoki.firebasestorage.app",
-  messagingSenderId: "272504469517",
-  appId: "1:272504469517:web:f2091f23bf7c564cbdbd44",
-  measurementId: "G-S8GBZ6SDZ1",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const menuBurguer = document.getElementById("menuBurguer");
 const navegacao = document.querySelector(".navegacao");
 
 async function emailExiste(email) {
   const usuariosRef = collection(db, "usuarios");
   const q = query(usuariosRef, where("email", "==", email));
-
   const querySnapshot = await getDocs(q);
 
-  return !querySnapshot.empty; // retorna true se o e-mail já existe
+  return !querySnapshot.empty;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -42,14 +28,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const nome = document.getElementById("nome").value;
     const senha = document.getElementById("senha").value;
     const confirmarSenha = document.getElementById("confirmarSenha").value;
+    const aviso = document.querySelector(".emUso");
 
     const senhaCurta = document.getElementById("senha-curta");
     const senhaLetras = document.getElementById("senha-letras");
     const senhaDiferente = document.getElementById("senha-diferente");
 
-    if (emailExiste(email)) {
-      alert("Esse e-mail já está em uso!");
+    const emailEmUso = await emailExiste(email);
+
+    if (emailEmUso) {
+      aviso.style.display = "block";
       return;
+    } else {
+      aviso.style.display = "none";
     }
 
     if (senha != confirmarSenha) {
@@ -98,4 +89,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 menuBurguer.addEventListener("click", () => {
   navegacao.classList.toggle("mostrar");
+});
+
+document.getElementById("sair").addEventListener("click", (e) => {
+  e.preventDefault();
+  window.location.replace("../index.html");
 });

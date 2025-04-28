@@ -1,45 +1,44 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getFirestore,
+  db,
   collection,
-  getDocs,
   deleteDoc,
   doc,
   onSnapshot,
   updateDoc,
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+} from "./firebaseConfig.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCELZUB4BzaezA4rZiYMERuQ6DF40ULL_A",
-  authDomain: "ledwoki.firebaseapp.com",
-  databaseURL: "https://ledwoki-default-rtdb.firebaseio.com",
-  projectId: "ledwoki",
-  storageBucket: "ledwoki.firebasestorage.app",
-  messagingSenderId: "272504469517",
-  appId: "1:272504469517:web:f2091f23bf7c564cbdbd44",
-  measurementId: "G-S8GBZ6SDZ1",
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const inputPesquisa = document.getElementById("inputPesquisa");
 const menuBurguer = document.getElementById("menuBurguer");
 const navegacao = document.querySelector(".navegacao");
+const container = document.querySelector(".cards-de-usuario");
+const nenhumElemento = document.querySelector("[nenhum]");
+const modal = document.getElementById("modalEditar");
+const inputNovoNome = document.getElementById("inputNovoNome");
+const inputNovaSenha = document.getElementById("inputNovaSenha");
+const inputNovoEmail = document.getElementById("inputNovoEmail");
+const salvarBtn = document.getElementById("salvarEdicao");
+const cancelarBtn = document.getElementById("cancelarEdicao");
+const sairBtn = document.getElementById("sair");
 
-function criarCard(nome, id, senha) {
+let idAtual = null;
+let cardAtual = null;
+
+function mascararEmail(email) {
+  const [usuario, dominio] = email.split("@");
+  const parteVisivel = usuario.substring(0, 3);
+  return `${parteVisivel}***@${dominio}`;
+}
+
+function criarCard({ nome, email, senha }, id) {
   const card = document.createElement("div");
   card.classList.add("card");
   card.dataset.id = id;
-
-  const modal = document.getElementById("modalEditar");
-  const inputNovoNome = document.getElementById("inputNovoNome");
-  const inputNovaSenha = document.getElementById("inputNovaSenha");
-  const salvarBtn = document.getElementById("salvarEdicao");
-  const cancelarBtn = document.getElementById("cancelarEdicao");
 
   card.innerHTML = `
     <div class="dados">
       <h2>Usuário</h2>
       <p class="nome"><strong>Nome:</strong> ${nome}</p>
-      
+      <p class="email"><strong>Email:</strong> ${mascararEmail(email)}</p>
     </div>
     <div class="botoes">
       <button class="editar">Editar</button>
@@ -47,63 +46,94 @@ function criarCard(nome, id, senha) {
     </div>
   `;
 
-  card.querySelector(".excluir").addEventListener("click", async () => {
-    await deleteDoc(doc(db, "usuarios", id));
-  });
+  const btnEditar = card.querySelector(".editar");
+  const btnExcluir = card.querySelector(".excluir");
 
-  card.querySelector(".editar").addEventListener("click", async () => {
-    inputNovoNome.value = nome;
-    inputNovaSenha.value = senha;
-    idAtual = id;
-    cardAtual = card;
-    modal.classList.remove("hidden");
-  });
-
-  let idAtual = null;
-  let cardAtual = null;
-
-  salvarBtn.addEventListener("click", async () => {
-    if (idAtual && inputNovoNome.value && inputNovaSenha.value) {
-      await updateDoc(doc(db, "usuarios", idAtual), {
-        nome: inputNovoNome.value,
-        senha: inputNovaSenha.value,
-      });
-
-      cardAtual.querySelector(
-        ".nome"
-      ).textContent = `Nome: ${inputNovoNome.value}`;
-      modal.classList.add("hidden");
+  btnExcluir.addEventListener("click", async () => {
+    try {
+      await deleteDoc(doc(db, "usuarios", id));
+    } catch (error) {
+      console.error("Erro ao excluir usuário:", error);
     }
   });
 
-  cancelarBtn.addEventListener("click", () => {
-    modal.classList.add("hidden");
+  btnEditar.addEventListener("click", () => {
+    inputNovoNome.value = nome;
+    inputNovaSenha.value = senha;
+    inputNovoEmail.value = email;
+    idAtual = id;
+    cardAtual = card;
+    modal.classList.remove("hidden");
   });
 
   return card;
 }
 
 function escutarUsuarios() {
-  const container = document.querySelector(".cards-de-usuario");
-  const nenhumElemento = document.querySelector("[nenhum]");
-
   onSnapshot(collection(db, "usuarios"), (snapshot) => {
     container.innerHTML = "";
+
     if (snapshot.empty) {
-      nenhumElemento.textContent = "nenhum usuario encontrado";
+      nenhumElemento.textContent = "Nenhum usuário encontrado.";
       return;
     }
+
     nenhumElemento.textContent = "";
-    snapshot.forEach((doc) => {
-      const dados = doc.data();
-      const card = criarCard(dados.nome, doc.id, dados.senha);
+
+    snapshot.forEach((docSnap) => {
+      const dados = docSnap.data();
+      const card = criarCard(dados, docSnap.id);
       container.appendChild(card);
     });
   });
+}
+
+async function salvarEdicao() {
+  if (!idAtual) return;
+
+  const novoNome = inputNovoNome.value.trim();
+  const novaSenha = inputNovaSenha.value.trim();
+  const novoEmail = inputNovoEmail.value.trim();
+
+  if (!novoNome || !novaSenha || !novoEmail) {
+    alert("Preencha todos os campos!");
+    return;
+  }
+
+  try {
+    await updateDoc(doc(db, "usuarios", idAtual), {
+      nome: novoNome,
+      senha: novaSenha,
+      email: novoEmail,
+    });
+
+    if (cardAtual) {
+      cardAtual.querySelector(".nome").innerHTML = `<strong>Nome:</strong> ${novoNome}`;
+      cardAtual.querySelector(".email").innerHTML = `<strong>Email:</strong> ${mascararEmail(novoEmail)}`;
+    }
+
+    fecharModal();
+  } catch (error) {
+    console.error("Erro ao atualizar usuário:", error);
+  }
+}
+
+function fecharModal() {
+  modal.classList.add("hidden");
+  idAtual = null;
+  cardAtual = null;
 }
 
 document.addEventListener("DOMContentLoaded", escutarUsuarios);
 
 menuBurguer.addEventListener("click", () => {
   navegacao.classList.toggle("mostrar");
+});
+
+salvarBtn.addEventListener("click", salvarEdicao);
+cancelarBtn.addEventListener("click", fecharModal);
+
+sairBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  window.location.replace("../index.html");
 });

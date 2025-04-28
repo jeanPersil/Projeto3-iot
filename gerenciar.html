@@ -17,28 +17,36 @@
       <ul>
         <li><a href="registrar.html">Registrar</a></li>
         <li><a href="gerenciar.html">Gerenciar User</a></li>
+        <li><a href="#sair" id="sair">Sair</a></li>
       </ul>
     </nav>
+
     <span id="menuBurguer" class="material-symbols-outlined"> menu </span>
 
     <h1 nenhum></h1>
 
-    <main class="cards-de-usuario"></main>
+    <main>
+      <div class="cards-de-usuario"></div>
+    </main>
 
     <div id="modalEditar" class="modal hidden">
       <div class="modal-content">
-        <div class="infos">
+        <div class="modal-header">
           <h3>Editar informações</h3>
-          <label for="">nome</label>
+        </div>
+        <div class="modal-body">
+          <label for="inputNovoEmail">Email</label>
+          <input type="text" id="inputNovoEmail" />
+
+          <label for="inputNovoNome">Nome</label>
           <input type="text" id="inputNovoNome" />
 
-          <label for="">senha</label>
+          <label for="inputNovaSenha">Senha</label>
           <input type="text" id="inputNovaSenha" />
         </div>
-
-        <div class="botaoModal">
-          <button id="salvarEdicao">Salvar</button>
-          <button id="cancelarEdicao">Cancelar</button>
+        <div class="modal-footer">
+          <button id="cancelarEdicao" class="modal-btn cancel">Cancelar</button>
+          <button id="salvarEdicao" class="modal-btn save">Salvar</button>
         </div>
       </div>
     </div>
